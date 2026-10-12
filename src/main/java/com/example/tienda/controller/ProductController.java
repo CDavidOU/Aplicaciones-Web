@@ -76,7 +76,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> update(@PathVariable Long id,@Valid @RequestBody ProductRequest product){
         Optional<Product> optional = service.update(id, toEntity(product));
         if(optional.isPresent()){
-            return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(optional.get()));
+            return ResponseEntity.status(HttpStatus.OK).body(toResponse(optional.get()));
         }
         return ResponseEntity.notFound().build();
     }
