@@ -72,9 +72,9 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/{id} ")
-    public ResponseEntity<ProductResponse> update(@PathVariable Long id,@Valid @RequestBody ProductRequest product){
-        Optional<Product> optional = service.update(id, toEntity(product));
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> update(@PathVariable Long id,@Valid @RequestBody ProductRequest productUpdate){
+        Optional<Product> optional = service.update(id, toEntity(productUpdate),productUpdate.categoryId());
         if(optional.isPresent()){
             return ResponseEntity.status(HttpStatus.OK).body(toResponse(optional.get()));
         }

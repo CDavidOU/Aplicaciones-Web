@@ -9,6 +9,7 @@ import com.example.tienda.model.Category;
 import com.example.tienda.model.Product;
 import com.example.tienda.repository.CategoryRepository;
 import com.example.tienda.repository.ProductRepository;
+import com.example.tienda.exception.ResourceNotFoundException;
 
 @Service 
 public class ProductService {
@@ -30,21 +31,31 @@ public class ProductService {
     }
 
     public Product save(Product product,Long categoryId){
-        Category category = repoCategory.findById(categoryId).orElseThrow();//Brujeria para encontrar un error, cuando no encuentra el id de la categoria, lanza una excepcion
+        Category category = repoCategory.
+        findById(categoryId).
+        orElseThrow(
+            () -> new ResourceNotFoundException("Category not found with id: "+ categoryId)
+        );//Brujeria para encontrar un error, cuando no encuentra el id de la categoria, lanza una excepcion
         product.setCategory(category);
         return repo.save(product);
     }
 
-    public Optional<Product> update(long id, Product product){
-        Optional<Product> optional = repo.findById(id);
-        if(optional.isEmpty()){
-            return Optional.empty();
-        }
-        Product productDb = optional.get();
-        productDb.setName(product.getName());
-        productDb.setPrice(product.getPrice());
-        productDb.setStock(product.getStock());
-        return Optional.of(repo.save(productDb));
+    public Optional<Product> update(long id, Product product, Long categoryId){
+         
+        Product productBd = repo.findById(id).orElseThrow(
+            ()-> new ResourceNotFoundException("CategoriId not found whit ID:" + id)
+        );
+        
+        Category category =repoCategory.findById(categoryId).orElseThrow(
+            ()-> new ResourceNotFoundException("Category not found whit id"+ categoryId)
+        );
+
+        //Product productDb = optional.get();
+        productBd.setName(product.getName()+"");
+        productBd.setPrice((double)product.getPrice());
+        productBd.setStock(product.getStock());
+        productBd.setCategory(category);
+        return Optional.of(repo.save(productBd));
     }
 
     public Boolean delete(long id){
