@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.tienda.dto.PalabraRequest;
 import com.example.tienda.dto.ProductRequest;
 import com.example.tienda.dto.ProductResponse;
 import com.example.tienda.model.Product;
@@ -72,17 +73,23 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
+
+    @PutMapping("/{id}/stock")
+    public ResponseEntity<ProductResponse> modify(@PathVariable long id,@Valid @RequestBody PalabraRequest palabraRequest) {
+        //TODO: process PUT request
+        Product updateProduct = service.modify(id, palabraRequest.getQuantity(),palabraRequest.getAction());
+
+       return ResponseEntity.ok(toResponse(updateProduct));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> update(@PathVariable Long id,@Valid @RequestBody ProductRequest productUpdate){
-        Optional<Product> optional = service.update(id, toEntity(productUpdate),productUpdate.categoryId());
-        if(optional.isPresent()){
-            return ResponseEntity.status(HttpStatus.OK).body(toResponse(optional.get()));
-        }
-        return ResponseEntity.notFound().build();
+        Product optional = service.update(id, toEntity(productUpdate),productUpdate.categoryId());
+        return ResponseEntity.ok(toResponse(optional));
     }
 
     private ProductResponse toResponse(Product product){
-        return new ProductResponse(product.getId(),product.getName(),product.getPrice(),product.getStock(),0L,"");
+        return new ProductResponse(product.getId(),product.getName(),product.getPrice(),product.getStock(),product.getCategory().getId(),product.getCategory().getName());
     }
 
     private Product toEntity(ProductRequest request){
@@ -92,4 +99,5 @@ public class ProductController {
         product.setStock(request.stock());
         return product;
     }
+
 }

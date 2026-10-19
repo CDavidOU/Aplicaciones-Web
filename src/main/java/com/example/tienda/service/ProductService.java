@@ -5,11 +5,12 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.tienda.dto.PalabraRequest;
+import com.example.tienda.exception.ResourceNotFoundException;
 import com.example.tienda.model.Category;
 import com.example.tienda.model.Product;
 import com.example.tienda.repository.CategoryRepository;
 import com.example.tienda.repository.ProductRepository;
-import com.example.tienda.exception.ResourceNotFoundException;
 
 @Service 
 public class ProductService {
@@ -31,31 +32,24 @@ public class ProductService {
     }
 
     public Product save(Product product,Long categoryId){
-        Category category = repoCategory.
-        findById(categoryId).
-        orElseThrow(
-            () -> new ResourceNotFoundException("Category not found with id: "+ categoryId)
-        );//Brujeria para encontrar un error, cuando no encuentra el id de la categoria, lanza una excepcion
+        Category category = repoCategory.findById(categoryId).orElseThrow();//Brujeria para encontrar un error, cuando no encuentra el id de la categoria, lanza una excepcion
         product.setCategory(category);
         return repo.save(product);
     }
 
-    public Optional<Product> update(long id, Product product, Long categoryId){
-         
-        Product productBd = repo.findById(id).orElseThrow(
-            ()-> new ResourceNotFoundException("CategoriId not found whit ID:" + id)
+    public Product update(long id, Product product, Long categoryId){
+        Product productDb = repo.findById(id).orElseThrow(
+            () -> new ResourceNotFoundException("Product not found whit id: " + id)
+        );
+        Category category= repoCategory.findById(categoryId).orElseThrow(
+           () -> new ResourceNotFoundException("Category not found whit id: " + id)
         );
         
-        Category category =repoCategory.findById(categoryId).orElseThrow(
-            ()-> new ResourceNotFoundException("Category not found whit id"+ categoryId)
-        );
-
-        //Product productDb = optional.get();
-        productBd.setName(product.getName()+"");
-        productBd.setPrice((double)product.getPrice());
-        productBd.setStock(product.getStock());
-        productBd.setCategory(category);
-        return Optional.of(repo.save(productBd));
+        // Product productDb = optional.get();
+        productDb.setName(product.getName());
+        productDb.setPrice(product.getPrice());
+        productDb.setStock(product.getStock());
+        return repo.save(productDb);
     }
 
     public Boolean delete(long id){
@@ -66,5 +60,22 @@ public class ProductService {
         return true;
     }
 
+    public Product modify(long id, PalabraRequest palabra) {
+    Product productDb = repo.findById(id).orElseThrow(
+        () -> new ResourceNotFoundException("Product not found with id: " + id)
+    ); 
+    if ("add".equalsIgnoreCase(palabra.getAction())) {
+        productDb.setStock(productDb.getStock() + palabra.getQuantity());
+        
+    } else if ("remove".equalsIgnoreCase(palabra.getAction())) {
+        if (palabra.getQuantity() > productDb.getStock()) {
+            throw new ResourceNotFoundException("No hay suficiente stock. Stock actual: " + productDb.getStock());
+        }
+        productDb.setStock(productDb.getStock() - palabra.getQuantity());
+    } else {
+        throw new ResourceNotFoundException("Acción no válida: '" + palabra.getAction() + "'. Debe ser 'add' o 'remove'.");
+    }
+    return repo.save(productDb);
+}
 
 }
