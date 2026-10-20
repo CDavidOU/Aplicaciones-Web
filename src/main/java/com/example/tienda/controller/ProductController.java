@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.tienda.dto.PalabraRequest; // Importación añadida
 import com.example.tienda.dto.ProductRequest;
 import com.example.tienda.dto.ProductResponse;
 import com.example.tienda.model.Product;
 import com.example.tienda.service.ProductService;
 
 import jakarta.validation.Valid;
-
-
 
 @RestController
 @RequestMapping("/products")
@@ -55,12 +54,8 @@ public class ProductController {
 
     @PostMapping()
     public ResponseEntity<ProductResponse> save(@Valid @RequestBody ProductRequest product){
-          /*if(producto.name().isEmpty()){
-            ResponseEntity.badRequest().body("ERROR el no esta el nombre");
-        }*/
-
-        Product save= service.save(toEntity(product),product.categoryId()); //save recibe el producto y atraves del de service.save con toEntity de producto lo guardamos empatando los tipos de datos
-        return  ResponseEntity.status(HttpStatus.CREATED).body(toResponse(save));
+        Product save = service.save(toEntity(product), product.categoryId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(save));
     }
 
     @DeleteMapping("/{id}")
@@ -72,20 +67,15 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
-<<<<<<< Updated upstream
-=======
     @PutMapping("/{id}/stock")
     public ResponseEntity<ProductResponse> modify(@PathVariable long id, @Valid @RequestBody PalabraRequest palabraRequest) {
-        // CORRECCIÓN: Pasar directamente el objeto palabraRequest en lugar de sus atributos separados
         Product updateProduct = service.modify(id, palabraRequest);
-
         return ResponseEntity.ok(toResponse(updateProduct));
     }
 
->>>>>>> Stashed changes
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> update(@PathVariable Long id,@Valid @RequestBody ProductRequest productUpdate){
-        Optional<Product> optional = service.update(id, toEntity(productUpdate),productUpdate.categoryId());
+    public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Valid @RequestBody ProductRequest productUpdate){
+        Optional<Product> optional = service.update(id, toEntity(productUpdate), productUpdate.categoryId());
         if(optional.isPresent()){
             return ResponseEntity.status(HttpStatus.OK).body(toResponse(optional.get()));
         }
@@ -93,13 +83,9 @@ public class ProductController {
     }
 
     private ProductResponse toResponse(Product product){
-<<<<<<< Updated upstream
-        return new ProductResponse(product.getId(),product.getName(),product.getPrice(),product.getStock(),0L,"");
-=======
         Long categoryId = null;
         String categoryName = "Sin categoría";
 
-        // Verificamos si la categoría no es nula antes de intentar obtener su ID y Nombre
         if (product.getCategory() != null) {
             categoryId = product.getCategory().getId();
             categoryName = product.getCategory().getName();
@@ -113,7 +99,6 @@ public class ProductController {
             categoryId,
             categoryName
         );
->>>>>>> Stashed changes
     }
 
     private Product toEntity(ProductRequest request){
