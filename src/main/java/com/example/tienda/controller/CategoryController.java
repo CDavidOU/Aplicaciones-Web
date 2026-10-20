@@ -1,8 +1,8 @@
 package com.example.tienda.controller;
-import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +41,6 @@ public class CategoryController {
         return ResponseEntity.ok(listResponse);
     }
     
-
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponse> findById(@PathVariable Long id){
         Optional<Category> category = service.findById(id);
@@ -52,15 +51,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponse>  save(@Valid @RequestBody CategoryRequest request) {
-        //TODO: process POST request
+    public ResponseEntity<CategoryResponse> save(@Valid @RequestBody CategoryRequest request) {
         Category savedCategory = service.save(toEntity(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(savedCategory));
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponse> update(@PathVariable Long id,@Valid @RequestBody CategoryRequest request) {
-        //TODO: process PUT request
         Optional<Category> optional = service.update(id,toEntity(request));
         if (optional.isPresent()) {
             return ResponseEntity.ok(toResponse(optional.get()));
@@ -76,6 +73,7 @@ public class CategoryController {
         }
         return ResponseEntity.notFound().build();
     }
+    
     private CategoryResponse toResponse(Category category) {
         return new CategoryResponse(category.getId(), category.getName());
     }
@@ -85,6 +83,4 @@ public class CategoryController {
         category.setName(request.name());
         return category;
     }
-    
-
 }

@@ -32,9 +32,7 @@ public class ProductService {
     }
 
     public Product save(Product product, Long categoryId){
-        Category category = repoCategory.
-        findById(categoryId).
-        orElseThrow(
+        Category category = repoCategory.findById(categoryId).orElseThrow(
             () -> new ResourceNotFoundException("Category not found with id: "+ categoryId)
         );
         product.setCategory(category);

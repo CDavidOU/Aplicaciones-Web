@@ -30,7 +30,4 @@ public class PalabraRequest {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-
-    
-
 }
