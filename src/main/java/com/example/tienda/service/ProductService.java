@@ -40,6 +40,7 @@ public class ProductService {
         return repo.save(product);
     }
 
+<<<<<<< Updated upstream
     public Optional<Product> update(long id, Product product, Long categoryId){
          
         Product productBd = repo.findById(id).orElseThrow(
@@ -56,6 +57,25 @@ public class ProductService {
         productBd.setStock(product.getStock());
         productBd.setCategory(category);
         return Optional.of(repo.save(productBd));
+=======
+    public Product update(long id, Product product, Long categoryId){
+        Product productDb = repo.findById(id).orElseThrow(
+            () -> new ResourceNotFoundException("Product not found with id: " + id)
+        );
+        Category category = repoCategory.findById(categoryId).orElseThrow(
+            // CORRECCIÓN: Imprimir categoryId en lugar de id
+            () -> new ResourceNotFoundException("Category not found with id: " + categoryId) 
+        );
+        
+        productDb.setName(product.getName());
+        productDb.setPrice(product.getPrice());
+        productDb.setStock(product.getStock());
+        
+        // CORRECCIÓN: Faltaba asignarle la categoría al producto antes de guardarlo
+        productDb.setCategory(category); 
+
+        return repo.save(productDb);
+>>>>>>> Stashed changes
     }
 
     public Boolean delete(long id){

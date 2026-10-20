@@ -1,5 +1,12 @@
 package com.example.tienda.controller;
 import java.util.Optional;
+<<<<<<< Updated upstream
+=======
+
+
+import java.util.ArrayList;
+import java.util.List;
+>>>>>>> Stashed changes
 
 
 import java.util.ArrayList;
